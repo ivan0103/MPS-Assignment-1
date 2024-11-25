@@ -50,6 +50,19 @@ constraint forall(t in 1..num_trucks) (
     sum(i in truck_items) (item_weight[i]) <= truck_max_weight[t]
 );
 
+% 5. Area of stacks and trucks
+constraint forall(t in 1..num_trucks) (
+    let {set of int: truck_stacks = {s | s in 1..num_items where item_truck[s] = t}} in
+    sum(s in truck_stacks) (item_length[s] * item_width[s]) <= truck_length[t] * truck_width[t]
+);
+
+% 6: Number of items in a stack must not exceed the smallest max stackability of the items in the stack
+constraint forall(s in 1..num_items) (
+    let {set of int: stack_items = {i | i in 1..num_items where item_stack[i] = s},
+        int: min_stackability = if card(stack_items) > 0 then min([item_max_stackability[i] | i in stack_items]) else 0}
+    in card(stack_items) <= min_stackability
+);
+
 % Objective: Minimize total transportation and inventory costs
 var float: total_cost = sum(t in 1..num_trucks) (
     (transport_cost_coeff + extra_truck_cost_coeff) * card({i | i in 1..num_items where item_truck[i] = t})
