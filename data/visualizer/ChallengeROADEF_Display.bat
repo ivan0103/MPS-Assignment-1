@@ -1,0 +1,1 @@
+VisuChallenge_Display.exe .\infos_challenge.ini

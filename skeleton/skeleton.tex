@@ -1,0 +1,482 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}  % Linux, macOS: enable non-English characters
+%\usepackage[latin1]{inputenc}    % Windows: enable non-English characters
+\usepackage{fullpage}
+
+%% Colours (used only in macros.tex, and not to be used here):
+\newcommand{\blue}[1]{{\color{blue}#1}}
+\newcommand{\green}[1]{{\color{green}#1}}
+\newcommand{\red}[1]{{\color{red}#1}}
+
+\renewcommand{\thepart}{\arabic{part}}
+\renewcommand{\thesection}{\Alph{section}}
+
+\input{macros}
+\input{mznlisting}
+
+\title{\textbf{Modelling and Problem Solving (CS4530) \\
+    TU Delft -- YEAR \\  % Replace by which academic year this is
+    Report for Assignment~$1$ \\
+    Group number $NN$  % Replace by your group number
+  }
+}
+
+%% Replace by your name(s)
+\author{Clara CLÄVER \and Whiz KIDD}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+%% Delete this paragraph:
+\noindent
+This document shows the ingredients of a good assignment or project
+report for this (part of the) course.  It is thanks to Pierre Flener, Uppsala University.
+%
+This document's \LaTeX\ source code also exemplifies almost everything you need to
+know about \LaTeX\ in order to typeset a professional-looking
+assignment or project report (for this course).
+%
+Use the source code of this document as a starting point for
+imitation, whether you use \LaTeX\ or not, and delete everything
+irrelevant.  The \LaTeX\ source code of this document also contains
+useful comments.  The usage of \LaTeX\ is \stressed{optional}, but
+highly recommended, for reasons that will soon become clear to those
+who have never used it before.  Any learning time of \LaTeX\ is
+\stressed{outside} the time budget of this course, but will hugely pay
+off, if not in this course then in the next course(s) you take and
+when writing a thesis or other scientific report.
+%
+\bigskip
+
+%% Delete this paragraph:
+Address \stressed{each} task of \stressed{each} problem, using the
+numbering and ordering in which the problems and tasks appear in the
+assignment statement:
+\begin{itemize}
+\item For each task requiring a model, follow the advice and structure
+  of Section~\ref{sec:minMagicSquare:model}.
+\item For each task requiring an evaluation, follow the structure of
+  Section~\ref{sec:minMagicSquare:eval}.
+\end{itemize}
+Delete all unnecessary text and suitably replace all other text in
+this document.
+
+%% Put a suitable heading here:
+\part{The Minimal Magic Square Problem}
+\setcounter{section}{0} % reset the section counter for each part
+
+% Note the non-breaking spaces, typeset via ~, between numbers and
+% their units:
+All experiments were run under
+% specs of the ThinLinc machines of the IT department:
+Linux Ubuntu~18.04 ($64$~bit) on an Intel Xeon E5520 of $2.27$~GHz,
+with $4$~processors of $4$~cores each, with a $70$~GB RAM and an
+$8$~MB L3 cache.%
+%
+%% Delete this footnote:
+\footnote{Hint: Under Linux, do \texttt{lscpu} to find this
+  information.  Under macOS, you find this information via ``About
+  This Mac'' in the Apple menu.}
+%
+%% Delete or replace this sentence:
+(If different hardware was used for different tasks, then justify this
+and replicate a paragraph like this one within each relevant section.)
+
+%% Put a suitable heading here:
+\section{Heading for Task~A}
+
+(Write your answer for Task~A here.)
+
+%% Put a suitable heading here:
+\section{Use Appropriate Headings for the Sections}
+
+%% Replace this sentence by something suitable:
+(Remember that this document is a guideline, so that you should change
+its structure and text when appropriate.)
+
+\section{Model}
+\label{sec:minMagicSquare:model}
+
+% You need NOT describe a problem that is fully described in the
+% assignment statement!
+
+%% Delete this entire paragraph, but follow its instructions:
+A CP model (e.g., \MiniZinc~\cite{MiniZinc}) \stressed{must} include comments
+that explain:
+\begin{itemize}
+\item the parameters that are not part of the possibly provided
+  skeleton code;
+\item the decision variables, and which problem constraints, if any,
+  they automatically enforce;
+\item the redundant decision variables; if none, then justify this in
+  Section~\ref{sec:minMagicSquare:desc};
+\item the problem constraints not enforced by the choice of decision
+  variables;
+\item the objective, including possibly the objective function;
+\item the channelling constraints; if none, then justify this in
+  Section~\ref{sec:minMagicSquare:desc};
+\item the implied constraints; if none, then justify this in
+  Section~\ref{sec:minMagicSquare:desc};
+\item the symmetry-breaking constraints; if none, then justify this in
+  Section~\ref{sec:minMagicSquare:desc};
+\item the (CP/LCG) inference annotations; if none, then justify this in
+  Section~\ref{sec:minMagicSquare:desc};
+\item the (CP/LCG) search annotation; if none, then justify this in
+  Section~\ref{sec:minMagicSquare:desc}.
+\end{itemize}
+\stressed{The quality of model comments is considered while grading.}
+%
+See Listing~\ref{model:minMagicSquare} for an example of sufficiently
+good model comments.
+%
+You \stressed{must} include your model in your report in addition to
+uploading it as a separate file (so that we can run it).
+
+\lstinputlisting[language=Mzn,caption={A \MiniZinc model for the
+  Minimal Magic Square
+  problem},label=model:minMagicSquare]{minMagicSquare.mzn}
+
+\subsection{Description}
+\label{sec:minMagicSquare:desc}
+
+%% Delete this paragraph, but follow its instructions:
+(Provide, here in the report, a more detailed explanation
+(\emph{i})~why each redundant decision variable is deemed useful,
+(\emph{ii})~why each channelling, implied, and symmetry-breaking
+constraint is correct, as well as (\emph{iii})~how the inference and
+search annotations were chosen.  Use any combination of in-lined code,
+mathematical notation, and plain English to explain your choices.)
+
+\paragraph{Redundant Decision Variables and Channelling Constraints.}
+We do not think that redundant decision variables could be usefully
+introduced into our model, which thus also has no channelling
+constraints.
+
+\paragraph{Implied Constraints.}
+Since the sum of each row must be equal to the magic sum, and since
+all values from $1$ to $\mzninline{n}^2$ must occur exactly once in
+the magic square, it is implied that the sum of the rows is the sum of
+the entire magic square, that is \mzninline{n * magicSum =
+  sum(1..n*n)}.  Since \mzninline{n} is a parameter, this implied
+constraint actually fixes the decision variable \mzninline{magicSum},
+namely to \mzninline{sum(1..n*n) div n} (that is to
+\mzninline{(n*n*n+n) div 2}), hence:
+%
+\lstinputlisting[language=Mzn,firstnumber=25,firstline=25,lastline=25]{minMagicSquare.mzn}
+%
+We reckon this constraint is useful to solvers of all technologies and
+hence we do \emph{not} flag it using the
+\mzninline{implied_constraint} special predicate.
+
+\paragraph{Symmetry-Breaking Constraints.}
+A magic square has rotation and reflection symmetries.
+%
+The rotation symmetries for $90$, $180$, and $270$ degrees and the
+reflection symmetries for the horizontal axis, vertical axis, and
+up-right diagonal can be broken by requiring the top-left corner of
+the magic square to be smaller than the other corners:
+% 
+\lstinputlisting[language=Mzn,firstnumber=30,firstline=30,lastline=34]{minMagicSquare.mzn}
+%
+The reflection symmetry for the down-right diagonal can be broken by
+requiring the bottom-left corner to be smaller than the top-right
+corner:
+% 
+\lstinputlisting[language=Mzn,firstnumber=37,firstline=37,lastline=37]{minMagicSquare.mzn}
+%
+As recommended, these constraints are flagged using the
+\mzninline{symmetry_breaking_constraint} special predicate.
+
+\paragraph{Inference Annotations.}
+We leave the sensible choice of inference for the linear equality
+constraints (lines~14--19) and the linear objective function (line~48)
+to each CP and LCG backend, assuming it is domain consistency for
+smaller values of \mzninline{n} and bounds consistency for larger
+values, the threshold being probably backend-specific.
+
+The implied linear equality constraint (line~25) has only one decision
+variable and functionally determines it, hence this constraint will be
+immediately satisfied and needs no annotation.
+
+All the symmetry-breaking constraints (lines~30--37) are inequalities
+on two decision variables, where we assume domain consistency under
+\emph{each} CP and LCG backend, as this is as cheap to achieve as the
+weaker bounds consistency.
+
+This leaves the all-difference constraint (line~11), for which we
+explicitly suggest domain consistency.
+
+\paragraph{Search Annotation.}
+Since the four corners of the magic square correspond to the only
+decision variables of the objective function and furthermore occur in
+more constraints than the other cells of the magic square, namely
+additionally in the diagonal and symmetry-breaking constraints, we
+suggest a sequence of two search phases.
+%
+First, we search on the four corners.  We use the variable selection
+strategy \mzninline{input_order} as the order of those four decision
+variables does not matter.  We use the value selection strategy
+\mzninline{indomain_split} in order to bisect the domain of the chosen
+decision variable, because bisection is known to be good in the
+presence of arithmetic constraints (only the all-difference constraint
+in line~11 is not arithmetic), starting on the lower half, because the
+objective function is to be minimised.
+%
+Second, we search on the remaining variables.  We use the strategy
+\mzninline{occurrence} to select a decision variable occurring in the
+largest number of constraints, as the non-corners of the diagonals are
+more constrained than the other remaining cells.  We use the value
+selection strategy \mzninline{indomain_split} for the same reason as
+in the first phase.
+
+\subsection{Implementation}
+\label{sec:minMagicSquare:impl}
+
+The described model, with the prescribed comments, is uploaded as file
+\texttt{minMagicSquare.mzn}.
+
+\paragraph{Compilation and Running Instructions.}
+%% This will help the teachers grade your model:
+To compile and run \texttt{minMagicSquare.mzn} one must supply a value
+for the parameter \texttt{n} using the \texttt{-D} option in the
+command line.
+%
+Assuming that \texttt{mzn-backend} is one of the backends provided for
+the course, the model can be compiled and run for \texttt{n=5} by
+typing \texttt{mzn-backend minMagicSquare.mzn -D "n=5"} at the command
+line.
+
+\paragraph{Sample Test-Run Command.}
+\begin{verbatim}
+> mzn-gecode minMagicSquare.mzn -D "n=5"
+[...snip...]
+----------
+Magic sum: 65
+Magic square: 
+3 14 17 24 7
+23 8 5 9 20
+22 4 25 1 13
+11 18 2 19 15
+6 21 16 12 10
+CornerSum: 26
+Corners: [3, 7, 6, 10]
+----------
+==========
+Finished in 1m 8s
+\end{verbatim}
+
+\section{Evaluation}
+\label{sec:minMagicSquare:eval}
+
+\newcommand{\TimeOut}{600}  %% in CPU seconds: Choose a suitable value!
+
+%% Delete this first sentence:
+(Choose, without justification, any solver backends you want, as long as you
+cover all the relevant technologies.)
+%
+We have chosen the backends for Gecode, Chuffed, Gurobi, OscaR.cbls,
+and Lingeling.
+
+%% Delete this paragraph, but follow its instructions:
+(Give a table of experiment results for the chosen backends, and
+analyse it.  Provide an ideally experimental justification for the
+redundant decision variables, channelling constraints, implied
+constraints, symmetry-breaking constraints, inference annotations, and
+search annotation.)
+
+\paragraph{Experiments.}
+Table~\ref{tab:res:minMagicSquare} gives the results for various
+values of~\mzninline{n} on our Minimal Magic Square model.
+%
+The time-out was $\TimeOut$~seconds.
+
+\begin{landscape}
+  \begin{table}[t]  %% Float the table towards the top [t] of its page
+    \centering
+    \begin{tabular}{rrrrrrrrrrr}  %% right [r] for decimal-point alignment
+%     \toprule
+      Technology
+      & \multicolumn{2}{c}{CP}
+      & \multicolumn{2}{c}{LCG}
+      & \multicolumn{2}{c}{MIP}
+      & \multicolumn{2}{c}{CBLS}
+      & \multicolumn{2}{c}{SAT} \\
+      \cmidrule(lr){02-03} \cmidrule(lr){04-05} \cmidrule(lr){06-07}
+      \cmidrule(lr){08-09} \cmidrule(lr){10-11}
+      Solver  %% Make your own pick of backends for each technology!
+      & \multicolumn{2}{c}{Gecode}
+      & \multicolumn{2}{c}{Chuffed}
+      & \multicolumn{2}{c}{Gurobi}
+      & \multicolumn{2}{c}{OscaR.cbls}
+      & \multicolumn{2}{c}{Lingeling} \\
+      \cmidrule(lr){02-03} \cmidrule(lr){04-05} \cmidrule(lr){06-07}
+      \cmidrule(lr){08-09} \cmidrule(lr){10-11}
+      \input{results.tex}
+%     \bottomrule
+    \end{tabular}
+    %% Adapt this caption to your problem:
+    \caption{Results for our Minimal Magic Square model.
+      %
+      In the `time' column, if the reported time is less than the
+      time-out (\TimeOut~seconds here), then the reported objective
+      value in the `\texttt{CornerSum}' column was \emph{proven}
+      optimal;
+      % 
+      else the time-out is indicated by `t/o' and the reported
+      objective value is either the best value found, but \emph{not}
+      proven optimal, before timing out,
+      % 
+      or~`--', indicating that no feasible solution was found before
+      timing out.
+      % 
+      If the reported time is~`--', then that instance was not
+      run on that backend, as the latter timed out on a smaller instance
+      (this is normally not a correct assumption, as larger instances
+      can be easier, but for the assignments of this course this
+      assumption is fine).}
+    \label{tab:res:minMagicSquare}
+  \end{table}
+\end{landscape}
+
+\paragraph{Analysis.}
+%% Delete this first sentence:
+(Refer to and explain the table(s), draw some conclusions from the
+experiment, and analyse:)
+%
+We observe that the chosen MIP backend wins overall, as it is the only
+one not to time out for the largest chosen instance, with
+$\mzninline{n}=6$.
+% 
+The chosen MIP and SAT backends scale best, as they are the only ones
+to establish feasibility for $\mzninline{n}=6$, even though the SAT
+objective value of~$39$ at time-out is far above the minimum of~$26$
+proven by the MIP backend.
+%
+On small instances, with $\mzninline{n} \in \Set{3,4}$, the chosen CP
+backend wins, narrowly defeating the chosen LCG backend followed by
+the MIP and SAT backends.  The SAT backend is the only one where
+$\mzninline{n}=4$ is harder than the smaller $\mzninline{n}=3$.
+%
+Starting from the medium instance, with $\mzninline{n}=5$, the MIP
+backend clearly wins, with only the CP backend also not timing out,
+the LCG backend finding but not proving the minimum, and the SAT
+backend missing the minimum by one unit.
+%
+The chosen CBLS backend always times out, because local search can by
+construction not prove minima on problems, such as here, where the
+trivial lower bound (namely $10 = 1 + 2 + 3 + 4$ here) on the
+objective value is not feasible; it finds the known minima for
+$\mzninline{n} \in \Set{3,4}$, but is far above the known minimum for
+$\mzninline{n}=5$ and cannot establish feasibility for
+$\mzninline{n}=6$ before timing out.
+
+\paragraph{Redundant Decision Variables and Channelling Constraints.}
+Our model was argued in Section~\ref{sec:minMagicSquare:desc} not to
+benefit from any redundant decision variables and their channelling
+constraints, hence there is no runtime impact analysis to make.
+
+\paragraph{Implied Constraints.}
+The huge runtime impact of our unique implied constraint (line~25),
+fixing the decision variable occurring in all constraints, is not
+experimentally demonstrated here, because our experiments (not shown
+here for time reasons) confirmed our hunch that it is absolutely
+crucial, for all solving technologies and all solvers.
+
+\paragraph{Symmetry-Breaking Constraints.}
+The huge runtime impact of our symmetry-breaking constraints is as
+follows, illustrated here only for the CP solver Gecode, which ought
+to be representative for backends enabling the symmetry-breaking
+constraints: in the presence of the search annotation (evaluated
+separately below), the most difficult instance that does not time out
+(namely $\mzninline{n}=5$) is solved in $68$~seconds with the
+symmetry-breaking constraints, but takes $377$~seconds without those
+constraints.
+
+\paragraph{Inference Annotations.}
+The huge runtime impact of our unique inference annotation (in
+line~11) is not experimentally demonstrated here, because our
+experiments (not shown here for time reasons) revealed that it is
+absolutely crucial for CP and LCG solvers (and because we do not know
+the backend defaults).
+
+\paragraph{Search Annotation.}
+The huge runtime impact of our search annotation is as follows,
+illustrated here only for the CP solver Gecode, which ought to be
+representative for CP and LCG solvers: in the presence of the
+symmetry-breaking constraints (evaluated separately above), the most
+difficult instance that does not time out (namely $\mzninline{n}=5$)
+is solved in $68$~seconds with the search annotation, but takes
+$408$~seconds without that annotation (there is a time-out upon no
+symmetry-breaking constraints and no search annotation).
+
+%% Delete this hint:
+\paragraph{Hint.}
+Use a script, such as the one explained in
+\url{http://user.it.uu.se/~gusbj192/courses/M4CO/cheatsheet.pdf} and available on Brightspace, that
+conducts the final experiments for you and directly generates a result
+table (see the \LaTeX\ source code of
+Table~\ref{tab:res:minMagicSquare}) that is automatically imported
+(rather than manually copied) into your report: each time you change
+the model, it suffices to re-run that script and re-compile your
+report, in your absence, without any tedious number copying!
+
+\section*{Feedback to the Teaching Staff}
+
+%% Fill in:
+(Please write a paragraph, which will not be graded, describing your
+experience with this assignment: which aspects were too difficult or
+too easy, and which aspects were interesting or boring?  This may help
+us improve the course for the next year.)
+
+\section*{Crash Report}
+
+%% Fill in:
+(For instances where no result is reported, due to a solver crashing
+or the \MiniZinc toolchain failing to compile the model, please
+include an error message, if there is any.  For example:)
+
+\paragraph{largecumulative.mzn} For the larger instances,
+mzn-oscar-cbls crashes with the following exception, which seems to be
+caused by the JVM not being allocated enough heap space.
+
+{\tiny
+\begin{verbatim}
+>./fzn-oscar-cbls -s -t 600 /tmp/tmp.fzn
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+  at scala.collection.mutable.FlatHashTable$class.growTable(FlatHashTable.scala:217)
+  at scala.collection.mutable.FlatHashTable$class.addEntry(FlatHashTable.scala:159)
+  at scala.collection.mutable.HashSet.addEntry(HashSet.scala:40)
+  at scala.collection.mutable.FlatHashTable$class.addElem(FlatHashTable.scala:139)
+  at scala.collection.mutable.HashSet.addElem(HashSet.scala:40)
+  at scala.collection.mutable.HashSet.$plus$eq(HashSet.scala:59)
+  at oscar.cp.scheduling.constraints.EnergeticReasoning$$anonfun$computeIntervals$1$$anonfun$apply$mcVI$sp$2.apply(EnergeticReasoning.scala:127)
+  at oscar.cp.scheduling.constraints.EnergeticReasoning$$anonfun$computeIntervals$1$$anonfun$apply$mcVI$sp$2.apply(EnergeticReasoning.scala:126)
+  at scala.collection.TraversableLike$WithFilter$$anonfun$foreach$1.apply(TraversableLike.scala:778)
+  at scala.collection.mutable.HashSet.foreach(HashSet.scala:78)
+  at scala.collection.TraversableLike$WithFilter.foreach(TraversableLike.scala:777)
+  at oscar.cp.scheduling.constraints.EnergeticReasoning$$anonfun$computeIntervals$1.apply$mcVI$sp(EnergeticReasoning.scala:126)
+  at oscar.cp.scheduling.constraints.EnergeticReasoning$$anonfun$computeIntervals$1.apply(EnergeticReasoning.scala:126)
+  at oscar.cp.scheduling.constraints.EnergeticReasoning$$anonfun$computeIntervals$1.apply(EnergeticReasoning.scala:126)
+  at scala.collection.mutable.HashSet.foreach(HashSet.scala:78)
+  at oscar.cp.scheduling.constraints.EnergeticReasoning.computeIntervals(EnergeticReasoning.scala:126)
+  at oscar.cp.scheduling.constraints.EnergeticReasoning.propagate(EnergeticReasoning.scala:77)
+\end{verbatim}
+}
+
+% \section*{References}
+%
+\bibliographystyle{plain}
+\bibliography{skeleton}
+
+%% Comment away the following line before submitting:
+\input{appendix}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

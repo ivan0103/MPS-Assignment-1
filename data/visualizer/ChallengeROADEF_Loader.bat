@@ -1,0 +1,1 @@
+VisuChallenge_Loader.exe .\infos_challenge.ini
