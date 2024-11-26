@@ -1,0 +1,2 @@
+Item ident;Supplier code;Supplier dock;Plant code;Plant dock;Product code;Package code;Number of items;Length;Width;Height;Weight;Nesting height;Stackability code;Forced orientation;Earliest arrival time;Latest arrival time;Inventory cost;Max stackability
+0090018000_03072022000001;62069400;;90018000;X0;762432908R;CON-S-0130;3;780;570;478;81,72;47;GERB--3195_780_570;widthwise;2,02208E+11;2,02208E+11;2;4

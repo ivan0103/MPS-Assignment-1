@@ -1,0 +1,2 @@
+Item ident;Supplier code;Supplier dock;Plant code;Plant dock;Product code;Package code;Number of items;Length;Width;Height;Weight;Nesting height;Stackability code;Forced orientation;Earliest arrival time;Latest arrival time;Inventory cost;Max stackability
+0090016900_03072022000001;27369300;;90016900;GRE1;985100778R;SLI---2112;1;1206;1010;1185;318,9;0;GERB--0528_1206_1010;none;2,02208E+11;2,02209E+11;134;100

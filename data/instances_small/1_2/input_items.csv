@@ -1,0 +1,2 @@
+Item ident;Supplier code;Supplier dock;Plant code;Plant dock;Product code;Package code;Number of items;Length;Width;Height;Weight;Nesting height;Stackability code;Forced orientation;Earliest arrival time;Latest arrival time;Inventory cost;Max stackability
+0090014400_03072022000001;90012500;;90014400;ILN;110104344R;MFM---0448;20;1200;1000;975;252,902;45;GERB--1213_1200_1000;none;2,02E+11;2,02E+11;18;100
