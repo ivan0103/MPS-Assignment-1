@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-instance_type = input("Enter instance type (instances/instance_small): ")
+instance_type = input("Enter instance type (instances/instances_small): ")
 instance_name = input("Enter instance name (AS, 1_1, ...): ")
 
 dir = os.path.dirname(os.path.abspath(__file__))
@@ -15,15 +15,34 @@ input_trucks.drop(['Supplier loading order', 'Supplier dock', 'Supplier dock loa
 
 with open(dir+r"/input_items.dzn", 'w') as file:
     for col in input_items.columns:
-        values = ', '.join(map(str, input_items[col]))
-        file.write(f"{col} = [{values}];\n")
+        c = 'item_' + col.lower().replace(' ', '_')
+        values = ', '.join(
+            str(float(value.replace(',', '.'))) if isinstance(value, str) and value.replace(',', '.').replace('.', '', 1).isdigit()
+            else (str(value).replace('.', ',') if isinstance(value, (float, int))
+                  else f'"{value}"')
+            for value in input_items[col]
+        )
+        file.write(f"{c} = [{values}];\n")
+    file.write(f"num_items = {len(input_items)};\n")
 
 with open(dir+r"/input_parameters.dzn", 'w') as file:
     for col in input_parameters.columns:
-        values = ', '.join(map(str, input_parameters[col]))
-        file.write(f"{col} = [{values}];\n")
+        c = col.lower().replace(' ', '_').replace('_(sec)', '')
+        values = ', '.join(
+            str(float(value.replace(',', '.'))) if isinstance(value, str) and value.replace(',', '.').replace('.', '', 1).isdigit()
+            else str(value).replace('.', ',')
+            for value in input_parameters[col]
+        )
+        file.write(f"{c} = {values};\n")
 
 with open(dir+r"/input_trucks.dzn", 'w') as file:
     for col in input_trucks.columns:
-        values = ', '.join(map(str, input_trucks[col]))
-        file.write(f"{col} = [{values}];\n")
+        c = 'truck_' + col.lower().replace(' ', '_')
+        values = ', '.join(
+            str(float(value.replace(',', '.'))) if isinstance(value, str) and value.replace(',', '.').replace('.', '', 1).isdigit() 
+            else (str(value).replace('.', ',') if isinstance(value, (float, int)) 
+                  else f'"{value}"') 
+            for value in input_trucks[col]
+        )
+        file.write(f"{c} = [{values}];\n")
+    file.write(f"num_trucks = {len(input_trucks)};\n")

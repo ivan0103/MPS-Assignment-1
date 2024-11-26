@@ -1,77 +1,80 @@
-int: num_items = {num_items};
-int: num_trucks = {num_trucks};
-
-array[1..num_items] of int: item_length = {item_lengths};
-array[1..num_items] of int: item_width = {item_widths};
-array[1..num_items] of int: item_height = {item_heights};
-array[1..num_items] of float: item_weight = {item_weights};
-array[1..num_items] of int: item_stackability_code = {item_stackability_codes};
-array[1..num_items] of int: item_max_stackability = {item_max_stackability};
-
-array[1..num_trucks] of int: truck_length = {truck_lengths};
-array[1..num_trucks] of int: truck_width = {truck_widths};
-array[1..num_trucks] of int: truck_height = {truck_heights};
-array[1..num_trucks] of float: truck_max_weight = {truck_max_weights};
-
-% Cost coefficients
-float: inventory_cost_coeff = {inventory_cost_coeff};
-float: transport_cost_coeff = {transport_cost_coeff};
-float: extra_truck_cost_coeff = {extra_truck_cost_coeff};
-
 % Variables
-array[1..num_items] of var 1..num_trucks: item_truck; % Truck assignment for each item
-array[1..num_items] of var 1..num_items: item_stack;  % Stack assignment for each item
+int: num_items;
+int: num_trucks;
+
+array[1..num_items] of string: item_item_ident;
+array[1..num_items] of int: item_supplier_code;
+array[1..num_items] of int: item_plant_code;
+array[1..num_items] of int: item_number_of_items;
+array[1..num_items] of int: item_length;
+array[1..num_items] of int: item_width;
+array[1..num_items] of int: item_height;
+array[1..num_items] of float: item_weight;
+array[1..num_items] of int: item_nesting_height;
+array[1..num_items] of string: item_stackability_code;
+array[1..num_items] of int: item_inventory_cost;
+
+array[1..num_trucks] of int: truck_supplier_code;
+array[1..num_trucks] of int: truck_plant_code;
+array[1..num_trucks] of int: truck_length;
+array[1..num_trucks] of int: truck_width;
+array[1..num_trucks] of int: truck_height;
+array[1..num_trucks] of float: truck_max_weight;
+array[1..num_trucks] of int: truck_cost;
+
+float: coefficient_inventory_cost;
+float: coefficient_transportation_cost;
+float: coefficient_cost_extra_truck;
+int: timelimit;
+
+% Decision variables
+array[1..num_items] of var 1..num_trucks: item_to_truck; % Assign each item to a truck
+array[1..num_items] of var int: item_delivery_time;      % Delivery time for each item
+
+% Auxiliary variables for truck usage
+array[1..num_trucks] of var 0..1: truck_used;            % Binary indicator for truck usage
+array[1..num_trucks] of var float: truck_weight;         % Total weight in each truck
+
+% Objective
+var float: total_transportation_cost =
+    sum(t in 1..num_trucks)(truck_used[t] * truck_cost[t]);
+
+var float: total_inventory_cost =
+    sum(i in 1..num_items)(
+        item_inventory_cost[i] * max(0, item_delivery_time[i] - item_delivery_time[i])
+    );
+
+var float: total_cost = coefficient_transportation_cost * total_transportation_cost +
+                        coefficient_inventory_cost * total_inventory_cost;
 
 % Constraints
-% 1. Ensure all items are assigned to a valid truck
-constraint forall(i in 1..num_items) (
-    item_truck[i] > 0 /\ item_truck[i] <= num_trucks
+% 1. Ensure all items are assigned to a truck
+constraint forall(i in 1..num_items)(
+    item_to_truck[i] >= 1 /\ item_to_truck[i] <= num_trucks
 );
 
-% 2. Stackability: Items in a stack must have the same stackability code
-constraint forall(s in 1..num_items) (
-    let {set of int: stack_items = {i | i in 1..num_items where item_stack[i] = s}} in
-    (card(stack_items) > 0 -> forall(i, j in stack_items where i != j) (
-        item_stackability_code[i] = item_stackability_code[j]
-    ))
+% 2. Ensure truck capacity is not exceeded
+constraint forall(t in 1..num_trucks)(
+    truck_weight[t] = sum(i in 1..num_items where item_to_truck[i] = t)(item_weight[i])
+    /\
+    truck_weight[t] <= truck_max_weight[t]
 );
 
-% 3. Max stack height per truck
-constraint forall(t in 1..num_trucks) (
-    let {set of int: truck_items = {i | i in 1..num_items where item_truck[i] = t}} in
-    sum(i in truck_items) (item_height[i]) <= truck_height[t]
+% 3. Ensure items are delivered within their time windows
+constraint forall(i in 1..num_items)(
+    item_delivery_time[i] >= 0 /\ item_delivery_time[i] <= timelimit
 );
 
-% 4. Max truck weight
-constraint forall(t in 1..num_trucks) (
-    let {set of int: truck_items = {i | i in 1..num_items where item_truck[i] = t}} in
-    sum(i in truck_items) (item_weight[i]) <= truck_max_weight[t]
+% 4. Stackability constraints
+constraint forall(i, j in 1..num_items where i != j)(
+    item_stackability_code[i] = item_stackability_code[j] ->
+    item_to_truck[i] = item_to_truck[j]
 );
 
-% 5. Area of stacks and trucks
-constraint forall(t in 1..num_trucks) (
-    let {set of int: truck_stacks = {s | s in 1..num_items where item_truck[s] = t}} in
-    sum(s in truck_stacks) (item_length[s] * item_width[s]) <= truck_length[t] * truck_width[t]
+% 5. Ensure all trucks that have items assigned are marked as used
+constraint forall(t in 1..num_trucks)(
+    truck_used[t] = bool2int(exists(i in 1..num_items)(item_to_truck[i] = t))
 );
 
-% % 6: Number of items in a stack must not exceed the smallest max stackability of the items in the stack
-% constraint forall(s in 1..num_items) (
-%     let {set of int: stack_items = {i | i in 1..num_items where item_stack[i] = s},
-%         int: min_stackability = if card(stack_items) > 0 then min([item_max_stackability[i] | i in stack_items]) else 0}
-%     in card(stack_items) <= min_stackability
-% );
-
-% Objective: Minimize total transportation and inventory costs
-var float: total_cost = sum(t in 1..num_trucks) (
-    (transport_cost_coeff + extra_truck_cost_coeff) * card({i | i in 1..num_items where item_truck[i] = t})
-) + sum(i in 1..num_items) (
-    inventory_cost_coeff * item_weight[i]
-);
+% Solve statement
 solve minimize total_cost;
-
-% Output
-output [
-    "Total cost: ", show(total_cost), "\n",
-    "Truck assignments: ", show(item_truck), "\n",
-    "Stack assignments: ", show(item_stack), "\n"
-];
